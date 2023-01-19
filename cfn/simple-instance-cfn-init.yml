@@ -157,19 +157,16 @@ Resources:
       KeyName: !Ref KeyName
       ImageId: !Ref InstanceAMI
       SecurityGroups: !Ref SecurityGroups
+      # Probably change this back to a command line script
       UserData:
         Fn::Base64: !Sub |
-          <powershell>
-          New-Item -ItemType "directory" -Force -Path "C:\Downloads\Amazon\AmazonCloudWatchAgent\"
-          Invoke-WebRequest -Uri "https://s3.amazonaws.com/amazoncloudwatch-agent/windows/amd64/latest/amazon-cloudwatch-agent.msi" -OutFile "C:\Downloads\Amazon\AmazonCloudWatchAgent\amazon-cloudwatch-agent.msi"
-          & C:\Downloads\Amazon\AmazonCloudWatchAgent\amazon-cloudwatch-agent.msi
-          While (!(Test-Path "C:\Program Files\Amazon\AmazonCloudWatchAgent\amazon-cloudwatch-agent-ctl.ps1" -ErrorAction SilentlyContinue))
-          {
-            # endless loop, when the file will be there, it will continue
-          }
-          & cfn-init.exe -v --stack ${AWS::StackId} --resource EC2Instance --region ${AWS::Region} --configsets default
-          & cfn-signal.exe -e %errorlevel% --stack ${AWS::StackId} --resource EC2Instance --region ${AWS::Region}
-          </powershell>
+          <script>
+          mkdir "C:\Downloads\Amazon\AmazonCloudWatchAgent\"
+          powershell -Command "Invoke-WebRequest -Uri https://s3.amazonaws.com/amazoncloudwatch-agent/windows/amd64/latest/amazon-cloudwatch-agent.msi -OutFile C:\Downloads\Amazon\AmazonCloudWatchAgent\amazon-cloudwatch-agent.msi"
+          C:\Downloads\Amazon\AmazonCloudWatchAgent\amazon-cloudwatch-agent.msi
+          cfn-init.exe -v --stack ${AWS::StackId} --resource EC2Instance --region ${AWS::Region} --configsets default
+          cfn-signal.exe -e %errorlevel% --stack ${AWS::StackId} --resource EC2Instance --region ${AWS::Region}
+          </script>
 
     CreationPolicy:
       ResourceSignal:
