@@ -42,6 +42,7 @@ Resources:
             - 01_CfnHup_service
             - 02_config-amazon-cloudwatch-agent
             - 03_restart_amazon-cloudwatch-agent
+            - 99_install_amazon_codedeploy_agent
           UpdateEnvironment:
             - 02_config-amazon-cloudwatch-agent
             - 03_restart_amazon-cloudwatch-agent
@@ -150,6 +151,11 @@ Resources:
               command: powershell -Command "C:\\'Program Files'\\Amazon\\AmazonCloudWatchAgent\\amazon-cloudwatch-agent-ctl.ps1 -a stop"
             02_start_service:
               command: powershell -Command "C:\\'Program Files'\\Amazon\\AmazonCloudWatchAgent\\amazon-cloudwatch-agent-ctl.ps1 -a fetch-config -m ec2 -c file:C:\\ProgramData\\Amazon\\AmazonCloudWatchAgent\\amazon-cloudwatch-agent.json -s"
+        # Must run last
+        99_install_amazon_codedeploy_agent:
+          commands:
+            installation:
+              command: C:\Downloads\Amazon\CodeDeployAgent\codedeploy-agent.msi
 
     Properties:
       InstanceType: !Ref InstanceType
@@ -157,12 +163,14 @@ Resources:
       KeyName: !Ref KeyName
       ImageId: !Ref InstanceAMI
       SecurityGroups: !Ref SecurityGroups
-      # Probably change this back to a command line script
+      # Had no luck converting this to powershell
       UserData:
         Fn::Base64: !Sub |
           <script>
           mkdir "C:\Downloads\Amazon\AmazonCloudWatchAgent\"
           powershell -Command "Invoke-WebRequest -Uri https://s3.amazonaws.com/amazoncloudwatch-agent/windows/amd64/latest/amazon-cloudwatch-agent.msi -OutFile C:\Downloads\Amazon\AmazonCloudWatchAgent\amazon-cloudwatch-agent.msi"
+          mkdir "C:\Downloads\Amazon\CodeDeployAgent\"
+          powershell -Command "Invoke-WebRequest -Uri https://aws-codedeploy-${AWS::Region}.s3.amazonaws.com/latest/codedeploy-agent.msi -OutFile C:\Downloads\Amazon\CodeDeployAgent\codedeploy-agent.msi"
           C:\Downloads\Amazon\AmazonCloudWatchAgent\amazon-cloudwatch-agent.msi
           cfn-init.exe -v --stack ${AWS::StackId} --resource EC2Instance --region ${AWS::Region} --configsets default
           cfn-signal.exe -e %errorlevel% --stack ${AWS::StackId} --resource EC2Instance --region ${AWS::Region}
