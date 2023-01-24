@@ -22,19 +22,17 @@ Parameters:
     Default: t4g.micro
   SecurityGroups:
     Description: The security group to use
-    Type: String
-    #List<AWS::EC2::SecurityGroup::Id>
+    Type: "List<AWS::EC2::SecurityGroup::Id>"
     ConstraintDescription: Must be valid security group(s)
   Subnets:
-    Type: String
-    #'List<AWS::EC2::Subnet::Id>'
+    Type: "List<AWS::EC2::Subnet::Id>"
     Description: A list of subnets for the Auto Scaling group
 Resources:
   Ec2KeyName:
     Type: "AWS::SSM::Parameter"
     Properties:
       Description: "Key-pair for EC2 access"
-      Name: !Sub "/${Namespace}/KeyPair"
+      Name: !Sub "/${Namespace}/KeyName"
       Type: String
       Value: !Ref KeyName
       AllowedPattern: "^[a-zA-Z][-a-zA-Z0-9]*"
@@ -51,12 +49,12 @@ Resources:
     Properties:
       Description: "Security groups"
       Name: !Sub "/${Namespace}/SecurityGroups"
-      Type: String
-      Value: !Ref SecurityGroups
+      Type: StringList
+      Value: !Join [", ", !Ref SecurityGroups]
   SubnetsParameter:
     Type: "AWS::SSM::Parameter"
     Properties:
       Description: "Subnets to place instance in"
       Name: !Sub "/${Namespace}/Subnets"
-      Type: String
-      Value: !Ref Subnets
+      Type: StringList
+      Value: !Join [", ", !Ref Subnets]

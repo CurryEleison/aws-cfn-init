@@ -26,16 +26,16 @@ Parameters:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
     Type: "AWS::SSM::Parameter::Value<AWS::EC2::KeyPair::KeyName>"
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
-    Default: "/Development/KeyPair"
+    Default: "/Development/KeyName"
   SecurityGroups:
     Description: The security group to use
     #Type: "AWS::SSM::Parameter::Value<List<AWS::EC2::SecurityGroup::Id>>"
-    Type: "AWS::SSM::Parameter::Value<String>"
+    Type: "AWS::SSM::Parameter::Value<List<String>>"
     ConstraintDescription: Must be valid security group(s)
     Default: "/Development/SecurityGroups"
   Subnets:
     # Type: "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>"
-    Type: "AWS::SSM::Parameter::Value<String>"
+    Type: "AWS::SSM::Parameter::Value<List<String>>"
     Description: A list of subnets for the Auto Scaling group
     Default: "/Development/Subnets"
 Resources:
@@ -190,7 +190,7 @@ Resources:
         IamInstanceProfile: 
           Name: !Ref AsgInstanceProfile
         KeyName: !Ref KeyName
-        SecurityGroupIds: !Split [", ", !Ref SecurityGroups]
+        SecurityGroupIds: !Ref SecurityGroups
         UserData: 
           Fn::Base64: !Sub |
             #!/bin/bash -xe
@@ -213,4 +213,4 @@ Resources:
       MaxSize: '1'
       MinSize: '0'
       DesiredCapacity: '1'
-      VPCZoneIdentifier: !Split [", ", !Ref Subnets]
+      VPCZoneIdentifier: !Ref Subnets
