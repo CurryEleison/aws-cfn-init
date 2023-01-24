@@ -3,11 +3,11 @@ AWS CloudFormation Init on Windows instance
 
 ## [Simple Windows](cfn/10_simple_instance/)
 
-Shows `cfn-init` in action on a Windows instance.
+Shows `cfn-init` in action on a Windows instance. Mainly, it installs CloudWatch and CodeDeploy agents.
 
 ## [Simple Launch Template](cfn/20_asg_launchtemplate/)
 
-Linux instance using `cfn-init` with a launch template and auto-scaling group
+Linux instance using `cfn-init` with a launch template and auto-scaling group. Likewise the CloudWatch and CodeDeploy agents are installed.
 
 ## [Add IAM](cfn/30_asg_iam/)
 
