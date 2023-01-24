@@ -13,31 +13,6 @@ Parameters:
     Description: Region specific image from the Parameter Store
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-arm64-gp2'
-  InstanceType:
-    Description: Amazon EC2 instance type for the instances
-    Type: "AWS::SSM::Parameter::Value<String>"
-    Default: "/Development/InstanceType"
-  # IAMRole:
-  #   Description: EC2 attached IAM role
-  #   Type: String
-  #   Default: DevOpsProTestingRole
-  #   ConstraintDescription: must be an existing IAM role which will be attached to EC2 instance.
-  KeyName:
-    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
-    Type: "AWS::SSM::Parameter::Value<AWS::EC2::KeyPair::KeyName>"
-    ConstraintDescription: must be the name of an existing EC2 KeyPair.
-    Default: "/Development/KeyName"
-  SecurityGroups:
-    Description: The security group to use
-    #Type: "AWS::SSM::Parameter::Value<List<AWS::EC2::SecurityGroup::Id>>"
-    Type: "AWS::SSM::Parameter::Value<List<String>>"
-    ConstraintDescription: Must be valid security group(s)
-    Default: "/Development/SecurityGroups"
-  Subnets:
-    # Type: "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>"
-    Type: "AWS::SSM::Parameter::Value<List<String>>"
-    Description: A list of subnets for the Auto Scaling group
-    Default: "/Development/Subnets"
 Resources:
   ParameterReadPolicy:
     Type: "AWS::IAM::ManagedPolicy"
@@ -186,11 +161,12 @@ Resources:
       LaunchTemplateName: !Sub ${AWS::StackName}-launch-template
       LaunchTemplateData:
         ImageId: !Ref LatestAmiId
-        InstanceType: !Ref InstanceType
+        InstanceType: !Sub "{{resolve:ssm:/${Namespace}/InstanceType}}"
         IamInstanceProfile: 
           Name: !Ref AsgInstanceProfile
-        KeyName: !Ref KeyName
-        SecurityGroupIds: !Ref SecurityGroups
+        #KeyName: !Ref KeyName
+        KeyName: !Sub "{{resolve:ssm:/${Namespace}/KeyName}}"
+        SecurityGroupIds: !Split [",", !Sub "{{resolve:ssm:/${Namespace}/SecurityGroups}}"]
         UserData: 
           Fn::Base64: !Sub |
             #!/bin/bash -xe
@@ -212,5 +188,5 @@ Resources:
         Version: !GetAtt SimpleLaunchTemplate.LatestVersionNumber
       MaxSize: '1'
       MinSize: '0'
-      DesiredCapacity: '1'
-      VPCZoneIdentifier: !Ref Subnets
+      DesiredCapacity: '0'
+      VPCZoneIdentifier: !Split [",", !Sub "{{resolve:ssm:/${Namespace}/Subnets}}"]
