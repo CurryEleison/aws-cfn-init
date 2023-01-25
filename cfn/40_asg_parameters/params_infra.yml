@@ -51,6 +51,7 @@ Resources:
       Name: !Sub "/${Namespace}/SecurityGroups"
       Type: StringList
       Value: !Join [", ", !Ref SecurityGroups]
+      AllowedPattern: "^sg-[a-f0-9]{5,}"
   SubnetsParameter:
     Type: "AWS::SSM::Parameter"
     Properties:
@@ -58,3 +59,52 @@ Resources:
       Name: !Sub "/${Namespace}/Subnets"
       Type: StringList
       Value: !Join [", ", !Ref Subnets]
+      # AllowedPattern: "^subnet-[a-f0-9]{8,}(,subnet-[a-f0-9]{8,})*$"
+  CloudWatchAgentConfig:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Description: "Subnets to place instance in"
+      Name: !Sub "/${Namespace}/AmazonCloudWatch-linux"
+      Type: String
+      Value: !Sub |
+        {
+          "agent": {
+            "run_as_user": "root"
+          },
+          "logs": {
+            "logs_collected": {
+              "files": {
+                "collect_list": [
+                  {
+                    "file_path": "/var/log/messages",
+                    "log_group_name": "/${Namespace}/var/log/messages",
+                    "log_stream_name": "{instance_id}",
+                    "retention_in_days": 60
+                  },
+                  {
+                    "file_path": "/opt/codedeploy-agent/deployment-root/deployment-logs/codedeploy-agent-deployments.log",
+                    "log_group_name": "/${Namespace}/codedeploy/logs",
+                    "log_stream_name": "{instance_id}",
+                    "retention_in_days": 60
+                  }
+                ]
+              }
+            }
+          },
+          "metrics": {
+            "append_dimensions": {
+              "AutoScalingGroupName": "${!aws:AutoScalingGroupName}",
+              "ImageId": "${!aws:ImageId}",
+              "InstanceId": "${!aws:InstanceId}",
+              "InstanceType": "${!aws:InstanceType}"
+            },
+            "metrics_collected": {
+              "statsd": {
+                "metrics_aggregation_interval": 60,
+                "metrics_collection_interval": 60,
+                "service_address": ":8125"
+              }
+            }
+          }
+        }
+

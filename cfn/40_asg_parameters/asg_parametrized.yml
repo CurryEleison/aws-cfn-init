@@ -96,46 +96,9 @@ Resources:
           packages:
             yum:
               amazon-cloudwatch-agent: []
-          files:
-            "/tmp/cloudwatch-config.json":
-              content: !Sub |
-                {
-                  "agent": {
-                    "run_as_user": "root"
-                  },
-                  "logs": {
-                    "logs_collected": {
-                      "files": {
-                        "collect_list": [
-                          {
-                            "file_path": "/var/log/messages",
-                            "log_group_name": "/${Namespace}/var/log/messages",
-                            "log_stream_name": "{instance_id}",
-                            "retention_in_days": 60
-                          },
-                          {
-                            "file_path": "/opt/codedeploy-agent/deployment-root/deployment-logs/codedeploy-agent-deployments.log",
-                            "log_group_name": "/${Namespace}/codedeploy/logs",
-                            "log_stream_name": "{instance_id}",
-                            "retention_in_days": 60
-                          }
-                        ]
-                      }
-                    }
-                  },
-                  "metrics": {
-                    "metrics_collected": {
-                      "statsd": {
-                        "metrics_aggregation_interval": 60,
-                        "metrics_collection_interval": 60,
-                        "service_address": ":8125"
-                      }
-                    }
-                  }
-                }
           commands:
             setup:
-              command: /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/tmp/cloudwatch-config.json
+              command: !Sub "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:/${Namespace}/AmazonCloudWatch-linux"
         # Invoke amazon-cloudwatch-agent-ctl to restart the AmazonCloudWatchAgent.
         # 03_restart_amazon-cloudwatch-agent:
         #   commands:
@@ -188,5 +151,5 @@ Resources:
         Version: !GetAtt SimpleLaunchTemplate.LatestVersionNumber
       MaxSize: '1'
       MinSize: '0'
-      DesiredCapacity: '0'
+      DesiredCapacity: '1'
       VPCZoneIdentifier: !Split [",", !Sub "{{resolve:ssm:/${Namespace}/Subnets}}"]
