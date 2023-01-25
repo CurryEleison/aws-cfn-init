@@ -50,16 +50,16 @@ Resources:
       Description: "Security groups"
       Name: !Sub "/${Namespace}/SecurityGroups"
       Type: StringList
-      Value: !Join [", ", !Ref SecurityGroups]
-      AllowedPattern: "^sg-[a-f0-9]{5,}"
+      Value: !Join [",", !Ref SecurityGroups]
+      AllowedPattern: "^sg-[a-f0-9]{8,}$"
   SubnetsParameter:
     Type: "AWS::SSM::Parameter"
     Properties:
       Description: "Subnets to place instance in"
       Name: !Sub "/${Namespace}/Subnets"
       Type: StringList
-      Value: !Join [", ", !Ref Subnets]
-      # AllowedPattern: "^subnet-[a-f0-9]{8,}(,subnet-[a-f0-9]{8,})*$"
+      Value: !Join [",", !Ref Subnets]
+      AllowedPattern: "^subnet-[a-f0-9]{8,}$"
   CloudWatchAgentConfig:
     Type: "AWS::SSM::Parameter"
     Properties:
