@@ -1,14 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Parameters stack for ASG stack
-# Create with 
-# aws cloudformation create-stack --template-body file://cfn/40_asg_parameters/params_infra.yml  --stack-name ASGParameters --parameters ParameterKey=KeyName,ParameterValue=tpe-ed25519 ParameterKey=SecurityGroups,ParameterValue=sg-01e6e524fed71df26 ParameterKey=Subnets,ParameterValue=subnet-918fc1fb\\,subnet-efaa2f93
-# Update with
-# aws cloudformation update-stack --template-body file://cfn/40_asg_parameters/params_infra.yml  --stack-name ASGParameters --parameters ParameterKey=KeyName,ParameterValue=tpe-ed25519 ParameterKey=SecurityGroups,ParameterValue=sg-01e6e524fed71df26 ParameterKey=Subnets,ParameterValue=subnet-918fc1fb\\,subnet-efaa2f93
 Parameters:
   Namespace:
     Description: Environment. Used to identify various things as they are created
     Type: String
     Default: Development
+    AllowedPattern: "^[a-zA-Z][a-zA-Z0-9]*$"
+    ConstraintDescription: Letters and numbers only
   KeyName:
     Description: Keypair for EC2 acccess
     Type: String
@@ -63,7 +61,7 @@ Resources:
   CloudWatchAgentConfig:
     Type: "AWS::SSM::Parameter"
     Properties:
-      Description: "Subnets to place instance in"
+      Description: "CloudWatch agent config json (linux version)"
       Name: !Sub "/${Namespace}/AmazonCloudWatch-linux"
       Type: String
       Value: !Sub |

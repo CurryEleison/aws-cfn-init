@@ -1,6 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Stack with a launch template and cfn-init
-# Create with aws cloudformation create-stack --template-body file://cfn/asg-launchtemplate.yml --parameters ParameterKey=KeyName,ParameterValue=tpe-ed25519 ParameterKey=SecurityGroups,ParameterValue=sg-01e6e524fed71df26 ParameterKey=Subnets,ParameterValue=subnet-918fc1fb\\,subnet-efaa2f93 --disable-rollback --stack-name asg-cfn-init
 Parameters:
   Namespace:
     Description: Environment. Used to identify various things as they are created

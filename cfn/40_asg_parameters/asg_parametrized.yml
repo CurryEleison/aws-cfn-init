@@ -1,9 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Stack with a launch template and cfn-init
-# Create with 
-# aws cloudformation create-stack --template-body file://cfn/40_asg_parameters/asg_parametrized.yml --stack-name ASG --capabilities CAPABILITY_IAM
-# Update with
-# aws cloudformation update-stack --template-body file://cfn/40_asg_parameters/asg_parametrized.yml --stack-name ASG --capabilities CAPABILITY_IAM
 Parameters:
   Namespace:
     Description: Environment. Used to identify various things as they are created
