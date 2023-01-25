@@ -82,6 +82,24 @@ Resources:
                     "retention_in_days": 60
                   },
                   {
+                    "file_path": "/var/log/secure",
+                    "log_group_name": "/${Namespace}/var/log/secure",
+                    "log_stream_name": "{instance_id}",
+                    "retention_in_days": 60
+                  },
+                  {
+                    "file_path": "/var/log/cron",
+                    "log_group_name": "/${Namespace}/var/log/cron",
+                    "log_stream_name": "{instance_id}",
+                    "retention_in_days": 60
+                  },
+                  {
+                    "file_path": "/var/log/yum.log",
+                    "log_group_name": "/${Namespace}/var/log/yum.log",
+                    "log_stream_name": "{instance_id}",
+                    "retention_in_days": 60
+                  },
+                  {
                     "file_path": "/opt/codedeploy-agent/deployment-root/deployment-logs/codedeploy-agent-deployments.log",
                     "log_group_name": "/${Namespace}/codedeploy/logs",
                     "log_stream_name": "{instance_id}",

@@ -129,6 +129,7 @@ Resources:
           Name: !Ref AsgInstanceProfile
         #KeyName: !Ref KeyName
         KeyName: !Sub "{{resolve:ssm:/${Namespace}/KeyName}}"
+        # TODO: doesn't seem to work with multiple security groups
         SecurityGroupIds: !Split [",", !Sub "{{resolve:ssm:/${Namespace}/SecurityGroups}}"]
         UserData: 
           Fn::Base64: !Sub |
