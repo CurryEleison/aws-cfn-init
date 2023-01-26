@@ -18,3 +18,8 @@ Builds on previous example by setting up an instance profile, role etc for the E
 Builds further by creating a separate stack that sets up the parameters. The `Namespace` input is used to name the parameters in SSM.
 In the stack template we use `{{resolve:ssm:parameter}}` to
 figure out the current values of the parameters. This is done so the only necessary input to the stack template is the `Namespace`.
+
+## [CodeDeploy](cfn/50_codedeploy/)
+
+Adds a simple S3 CodeDeploy. Take the files in `app/` zipthem and upload to an S3 bucket. Take the bucket and key
+and use them in the parameter stack. 
