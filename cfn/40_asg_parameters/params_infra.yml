@@ -19,7 +19,7 @@ Parameters:
       - t4g.medium
     Default: t4g.micro
   SecurityGroups:
-    Description: The security group to use
+    Description: The security group to use. Only one group. Would work with multiple groups if we didn't have a dynamic ssm parameter name
     Type: "List<AWS::EC2::SecurityGroup::Id>"
     ConstraintDescription: Must be valid security group(s)
   Subnets:
@@ -53,7 +53,7 @@ Resources:
   SubnetsParameter:
     Type: "AWS::SSM::Parameter"
     Properties:
-      Description: "Subnets to place instance in"
+      Description: "Subnets to place instances in. VPCZoneIdentifier seems to be tolerant and resolves the list correctly"
       Name: !Sub "/${Namespace}/Subnets"
       Type: StringList
       Value: !Join [",", !Ref Subnets]
@@ -64,6 +64,7 @@ Resources:
       Description: "CloudWatch agent config json (linux version)"
       Name: !Sub "/${Namespace}/AmazonCloudWatch-linux"
       Type: String
+      # Need to go with root user in order to read the logs
       Value: !Sub |
         {
           "agent": {
