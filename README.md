@@ -23,3 +23,42 @@ figure out the current values of the parameters. This is done so the only necess
 
 Adds a simple S3 CodeDeploy. Take the files in `app/` zipthem and upload to an S3 bucket. Take the bucket and key
 and use them in the parameter stack. 
+
+## [String Reflector](cfn/51_parameter_customresource/)
+
+Demonstrates how to work around issues with resolution order between `!Split` `!Sub` and `{{resolve:...}}`
+constructs. 
+
+Cloudformation will always resolve the `!Fn::*` first and do the `{{resolve:...}}` later. So they are tricky
+to combine. E.g. this
+
+```
+!Split [",", !Sub "{{resolve:ssm:/${Namespace}/SecurityGroups}}"]
+```
+
+will correctly retrieve the parameter from SSM parameter store, but the `!Split` will happen _before_
+the parameter is retrieved, so the contents of the parameter won't be split. To work around this we
+set up a CFN Custom Resource, with a backing lambda that simply reflects back the properties of the
+resource as attributes. Thus you can go
+
+```yaml
+Parameters:
+  Namespace:
+    Type: String
+    Default: Development
+Resources:
+  StringReflectorResourceBackend:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      ...
+  StringReflector:
+    Type: "AWS::CloudFormation::CustomResource"
+    Properties:
+      ServiceToken: !GetAtt StringReflectorResourceBackend.Arn
+      SecurityGroups: !Sub "{{resolve:ssm:/${Namespace}/SecurityGroups}}"
+  SimpleLaunchTemplate:
+    Type: "AWS::EC2::LaunchTemplate"
+    Properties:
+      LaunchTemplateData:
+        SecurityGroupIds: !Split [",", !GetAtt StringReflector.SecurityGroups]
+```
