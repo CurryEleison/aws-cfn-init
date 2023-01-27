@@ -22,7 +22,12 @@ figure out the current values of the parameters. This is done so the only necess
 ## [CodeDeploy](cfn/50_codedeploy/)
 
 Adds a simple S3 CodeDeploy. Take the files in `app/` zipthem and upload to an S3 bucket. Take the bucket and key
-and use them in the parameter stack. 
+and use them in the parameter stack.
+
+The CodeDeploy app tries to do a deploy as soon as the deployment group is created, but this will fail as the instance isn't
+ready yet. You can work around this by commenting out the CodeDeploy resources and creating the stack. Then wait a bit, comment
+in the CodeDeploy resources again and update the stack. I'll think about making a custom resource that waits for everything to 
+be ready and then make the deployment group dependent on that.
 
 ## [String Reflector](cfn/51_parameter_customresource/)
 
