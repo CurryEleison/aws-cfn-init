@@ -69,7 +69,7 @@ Resources:
         SecurityGroupIds: !Split [",", !GetAtt StringReflector.SecurityGroups]
 ```
 
-# 60
+# [Load Balancer, Target Group and traffic control](/cfn/60_alb/)
 
 This one adds an ALB to the mix. The stack is partitioned into three now:
 1. One stack for parameters (as in the previous ones)
@@ -77,7 +77,9 @@ This one adds an ALB to the mix. The stack is partitioned into three now:
 1. One stack for CodeDeploy
 
 The ALB will be unhealthy until the CodeDeploy stack is created and the first
-deployment is done, but the stack creates OK.
+deployment is done, but the stack creates OK. CodeDeploy makes use of both
+the autoscaling group and the loadbalancer/targetgroup, so traffic is 
+controlled during deployment.
 
 The ALB is on port 80. The required certificate will have to go in a parameter.
 
