@@ -32,7 +32,8 @@ be ready and then make the deployment group dependent on that.
 ## [String Reflector](cfn/51_parameter_customresource/)
 
 Demonstrates how to work around issues with resolution order between `!Split` `!Sub` and `{{resolve:...}}`
-constructs. 
+constructs. This workaround is a great demonstration of why you want to use CDK instead
+of raw CloudFormation (but I use it anyway.)
 
 Cloudformation will always resolve the `!Fn::*` first and do the `{{resolve:...}}` later. So they are tricky
 to combine. E.g. this
@@ -67,3 +68,20 @@ Resources:
       LaunchTemplateData:
         SecurityGroupIds: !Split [",", !GetAtt StringReflector.SecurityGroups]
 ```
+
+# 60
+
+This one adds an ALB to the mix. The stack is partitioned into three now:
+1. One stack for parameters (as in the previous ones)
+1. One stack for the ASG and ALB setup
+1. One stack for CodeDeploy
+
+The ALB will be unhealthy until the CodeDeploy stack is created and the first
+deployment is done, but the stack creates OK.
+
+The ALB is on port 80. The required certificate will have to go in a parameter.
+
+I sadly made use of the `StringReflector` lambda in order to be able to have
+lists of subnets and security groups as lists in SSM parameters, where the 
+SSM parameter name is dynamically generated. Again, this would probably be
+better solved by using CDK.
