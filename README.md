@@ -90,5 +90,15 @@ better solved by using CDK.
 
 ## [Load balancer, target group, deployment combined](cfn/61_alb_combined/)
 
-Nothing new. Just combined CodeDeploy back into the main stack (and changed
-deployment style to not use traffic control to save time.)
+Nothing new. Just combined CodeDeploy back into the main stack. It's sort of random
+if it works or not; the first deployment will frequently fail because the instances
+are not ready yet.
+
+## [Certificate on ALB](cfn/62_alb_combined_cert/)
+
+Certificate provisioning from https://github.com/dflook/cloudformation-dns-certificate .
+Including the certificate provisioning lambda directly in the stack is according to
+recommendation, but I'd probably put it in a separate stack and export the ARN so it
+is reusable.
+
+Also adds DNS record for the name in the certificate and redirects HTTP traffic to HTTPS.
