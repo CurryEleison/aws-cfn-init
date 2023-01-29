@@ -69,7 +69,7 @@ Resources:
         SecurityGroupIds: !Split [",", !GetAtt StringReflector.SecurityGroups]
 ```
 
-# [Load Balancer, Target Group and traffic control](/cfn/60_alb/)
+## [Load Balancer, Target Group and traffic control](/cfn/60_alb/)
 
 This one adds an ALB to the mix. The stack is partitioned into three now:
 1. One stack for parameters (as in the previous ones)
@@ -87,3 +87,8 @@ I sadly made use of the `StringReflector` lambda in order to be able to have
 lists of subnets and security groups as lists in SSM parameters, where the 
 SSM parameter name is dynamically generated. Again, this would probably be
 better solved by using CDK.
+
+## [Load balancer, target group, deployment combined](cfn/61_alb_combined/)
+
+Nothing new. Just combined CodeDeploy back into the main stack (and changed
+deployment style to not use traffic control to save time.)
