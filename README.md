@@ -102,3 +102,9 @@ recommendation, but I'd probably put it in a separate stack and export the ARN s
 is reusable.
 
 Also adds DNS record for the name in the certificate and redirects HTTP traffic to HTTPS.
+
+
+## [CodePipeline](cfn/70_codepipeline/)
+
+Adds a CodePipeline that triggers on CloudTrail events. The CloudTrail S3 data 
+event was added by hand, but is easy to add in from cfn.
