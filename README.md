@@ -108,3 +108,9 @@ Also adds DNS record for the name in the certificate and redirects HTTP traffic 
 
 Adds a CodePipeline that triggers on CloudTrail events. The CloudTrail S3 data 
 event was added by hand, but is easy to add in from cfn.
+
+## [CodePipeline triggered by S3 Event](cfn/71_codepipeline_trailevent/)
+
+Same as above, but adds the cloudtrail event. Creates a new bucket for the 
+trail since you need a bucket policy -- CloudTrails don't take IAM roles
+so they need a resource policy in order to deliver the logs somewhere.
